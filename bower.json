@@ -2,10 +2,10 @@
 	"name": "requirejs-messageformat",
 	"version": "0.0.1",
 	"main": [
-		"msgfmt.js"
+		"src/msgfmt.js"
 	],
 	"ignore": [
-		"tests",
+		"test",
 		"Gruntfile.js"
 	],
 	"dependencies": {
