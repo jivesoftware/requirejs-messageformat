@@ -1,0 +1,29 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>requirejs-messageformat Test Suite</title>
+
+    <script src="../bower_components/qunit/qunit/qunit.js"></script>
+    <link rel="stylesheet" href="../bower_components/qunit/qunit/qunit.css"/>
+
+    <script src="../bower_components/requirejs/require.js"></script>
+    <script src="./requirejs.config.js"></script>
+
+    <script>
+        QUnit.config.autostart = false;
+        QUnit.config.reorder = false;
+
+        require([
+            "test/msgfmtTest"
+        ], function() {
+            QUnit.start();
+        })
+    </script>
+</head>
+<body>
+
+<div id="qunit"></div>
+
+</body>
+</html>

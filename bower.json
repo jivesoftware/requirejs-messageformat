@@ -1,0 +1,20 @@
+{
+	"name": "requirejs-messageformat",
+	"version": "0.0.1",
+	"main": [
+		"msgfmt.js"
+	],
+	"ignore": [
+		"tests",
+		"Gruntfile.js"
+	],
+	"dependencies": {
+		"requirejs": "2.1.2",
+		"messageformat": "0.1.8",
+		"requirejs-text": "2.0.10",
+		"requirejs-plugins": "1.0.2"
+	},
+	"devDependencies": {
+		"qunit": "1.9.0"
+	}
+}

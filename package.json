@@ -1,0 +1,35 @@
+{
+	"name": "requirejs-messageformat",
+	"title": "MessageFormat plugin for RequireJS",
+	"description": "RequireJS plugin that consumes MessageFormat nls bundles and compiles them",
+	"version": "0.0.1",
+	"homepage": "http://github.com/jivesoftware/require-messageformat",
+	"author": {
+		"name": "Ghislain Seguin",
+		"url": "https://github.com/gseguin"
+	},
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/jivesoftware/require-messageformat.git"
+	},
+	"bugs": "https://github.com/jivesoftware/require-messageformat/issues",
+	"licenses": [
+		{
+			"type": "MIT",
+			"url": "https://github.com/jivesoftware/require-messageformat/blob/master/LICENSE"
+		}
+	],
+	"devDependencies": {
+		"grunt": "0.4.2",
+		"grunt-contrib-jshint": "0.6.3",
+		"grunt-contrib-requirejs": "0.4.1",
+		"grunt-coveralls": "0.3.0",
+		"grunt-qunit-istanbul": "0.3.0",
+		"load-grunt-tasks": "0.3.0"
+	},
+	"main": "Gruntfile.js",
+	"engines": {
+		"node": ">= 0.8.0"
+	},
+	"keywords": [ "requirejs", "plugin", "i18n", "MessageFormat" ]
+}
