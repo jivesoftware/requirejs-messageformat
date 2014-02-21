@@ -14,20 +14,16 @@ Here is how your RequireJS config should look like:
 
 ```javascript
 requirejs.config({
-    "paths": {
-        "requirejs-plugins": "third-party/requirejs-plugins"
-
-        // libraries
-        "messageformat": "third-party/messageformat/messageformat",
-        "messageformat/locale": "third-party/messageformat/locale"
+	"paths": {
+        "messageformat": "bower_components/messageformat/messageformat",
+        "messageformat/locale": "bower_components/messageformat/locale"
     },
 
-    maps: {
+    "map": {
         "*": {
-            // requireJS plugins
-            "text": "requirejs-plugins/text",
-            "json": "requirejs-plugins/json",
-            "msgfmt": "requirejs-plugins/msgfmt"
+            "text": "bower_components/requirejs-text/text",
+            "json": "bower_components/requirejs-plugins/src/json",
+            "mgfmt": "bower_components/requirejs-messageformat/msgfmt"
         }
     }
 })
