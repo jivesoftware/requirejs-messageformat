@@ -20,6 +20,7 @@
 		}
 	],
 	"devDependencies": {
+		"bower": "1.2.8",
 		"grunt": "0.4.2",
 		"grunt-contrib-clean": "0.5.0",
 		"grunt-contrib-jshint": "0.6.3",
@@ -33,7 +34,13 @@
 		"node": ">= 0.8.0"
 	},
 	"scripts": {
+		"postinstall": "./node_modules/bower/bin/bower install",
 		"ci": "grunt test coveralls"
 	},
-	"keywords": [ "requirejs", "plugin", "i18n", "MessageFormat" ]
+	"keywords": [
+		"requirejs",
+		"plugin",
+		"i18n",
+		"MessageFormat"
+	]
 }
