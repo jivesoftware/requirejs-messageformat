@@ -1,4 +1,4 @@
-requirejs-messageformat
+requirejs-messageformat [![Build Status](https://travis-ci.org/gseguin/requirejs-messageformat.png?branch=master)](https://travis-ci.org/gseguin/requirejs-messageformat) [![Coverage Status](https://coveralls.io/repos/gseguin/requirejs-messageformat/badge.png?branch=master)](https://coveralls.io/r/gseguin/requirejs-messageformat?branch=master)
 =======================
 
 RequireJS plugin to consume MessageFormat resource bundles
