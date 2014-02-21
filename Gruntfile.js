@@ -31,9 +31,15 @@ module.exports = function ( grunt ) {
 				// LCOV coverage file relevant to every target
 				src: "_tests/reports/lcov/lcov.info"
 			}
+		},
+
+		clean: {
+			testOut: [ "_tests" ]
 		}
-	} );
+	});
 
 	// grunt plugins
 	require( "load-grunt-tasks" )( grunt );
+
+	grunt.registerTask( "test", [ "clean:testOut", "qunit" ] );
 };
