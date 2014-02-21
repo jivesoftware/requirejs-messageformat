@@ -55,13 +55,13 @@
 		if ( master[locale] ) {
 			needed.push( locale );
 			if ( master[locale] === true || master[locale] === 1 ) {
-				toLoad.push( prefix + locale + '/' + suffix );
+				toLoad.push( prefix + locale + "/" + suffix );
 			}
 		}
 	}
 
 	function addIfExists( req, locale, toLoad, prefix, suffix ) {
-		var fullName = prefix + locale + '/' + suffix;
+		var fullName = prefix + locale + "/" + suffix;
 		if ( require._fileExists( req.toUrl( fullName ) ) ) {
 			toLoad.push( processModuleName( fullName ) );
 		}
@@ -97,10 +97,11 @@
 			}
 
 			function _compile() {
-				var mf = new MessageFormat( locale ),
-					returnee = {},
-					val;
-				for ( var key in bundle ) {
+				var key, val,
+					mf = new MessageFormat( locale ),
+					returnee = {};
+
+				for ( key in bundle ) {
 					val = bundle[ key ];
 					if ( typeof val === "string" ) {
 						returnee[ key ] = mf.compile( val );
@@ -114,15 +115,19 @@
 			}
 
 			if ( locale && !MessageFormat.locale[ locale ] ) {
-				text.get( req.toUrl( "messageformat/locale/" + ( locale === "root" ? "en" : locale ) + ".js" ), function ( content ) {
-					pluralizerBuildMap[ locale ] = content;
-					eval( content );
-					_compile();
-				}, function ( err ) {
-					if ( onLoad.error ) {
-						onLoad.error( err );
+				text.get( req.toUrl( "messageformat/locale/" + ( locale === "root" ? "en" : locale ) + ".js" ),
+					function ( content ) {
+						pluralizerBuildMap[ locale ] = content;
+						/* jshint -W061 */
+						eval( content );
+						/* jshint +W061 */
+						_compile();
+					}, function ( err ) {
+						if ( callback.error ) {
+							callback.error( err );
+						}
 					}
-				});
+				);
 			} else {
 				_compile();
 			}
@@ -199,13 +204,13 @@
 									if ( count === toLoad.length ) {
 										onLoad();
 									}
-								})
+								});
 							}, config );
 						});
 					} else {
-						req( toLoad, function ( content ) {
-							text.get( 
-								req.toUrl( "messageformat/locale/" + ( parts[0] === "root" ? "en" : parts[0] ) + ".js" ), 
+						req( toLoad, function () {
+							text.get(
+								req.toUrl( "messageformat/locale/" + ( parts[0] === "root" ? "en" : parts[0] ) + ".js" ),
 								function ( content ) {
 									pluralizerBuildMap[ locale ] = content;
 									onLoad();
@@ -218,7 +223,24 @@
 					json.load( masterName, req, function ( master ) {
 						//Figure out the best fit
 						var needed = [],
-							part;
+							part,
+							onResourceBundleLoad;
+
+						onResourceBundleLoad = function( rb ) {
+							var i, partBundle, part;
+							for ( i = needed.length - 1; i > -1 && needed[ i ]; i-- ) {
+								part = needed[ i ];
+								partBundle = master[ part ];
+								if ( partBundle === true || partBundle === 1 ) {
+									partBundle = rb;
+								}
+								mixin( value, partBundle );
+							}
+
+							mixin( value, master );
+
+							compile( value, part, req, onLoad );
+						};
 
 						//Always allow for root, then do the rest of the locale parts.
 						addPart( "root", master, needed, toLoad, prefix, suffix );
@@ -231,21 +253,7 @@
 						if ( toLoad.length ) {
 							//Load all the parts missing.
 							for ( i = 0; i < toLoad.length; i++ ) {
-								json.load( toLoad[i], req, function( rb ) {
-									var i, partBundle, part;
-									for ( i = needed.length - 1; i > -1 && needed[ i ]; i-- ) {
-										part = needed[ i ];
-										partBundle = master[ part ];
-										if ( partBundle === true || partBundle === 1 ) {
-											partBundle = rb;
-										}
-										mixin( value, partBundle );
-									}
-
-									mixin( value, master );
-
-									compile( value, part, req, onLoad );
-								}, config );
+								json.load( toLoad[i], req, onResourceBundleLoad, config );
 							}
 						} else {
 							mixin( value, master );
@@ -259,29 +267,30 @@
 			//write method based on RequireJS official text plugin by James Burke
 			//https://github.com/jrburke/requirejs/blob/master/text.js
 			write: function ( pluginName, moduleName, write ) {
-				for ( var locale in pluralizerBuildMap ) {
+				var bundle, content, key, locale;
+
+				for ( locale in pluralizerBuildMap ) {
 					write( "// Installs MessageFormat '" + locale + "' locale" );
 					write( "require( ['messageformat'], function( MessageFormat ) { " + pluralizerBuildMap[ locale ] + " });\n" );
 					// Include that locale only once.
 					delete pluralizerBuildMap[ locale ];
 				}
 				if ( moduleName in buildMap ) {
-					var bundle = buildMap[ moduleName ],
-						content = '{';
+					bundle = buildMap[ moduleName ];
+					content = "{";
 
-					for ( var key in bundle ) {
-						content += '"' + key + '": ';
-						content += '' + bundle[ key ] + ", ";
+					for ( key in bundle ) {
+						content += "\"" + key + "\": ";
+						content += "" + bundle[ key ] + ", ";
 					}
 					if ( content.length > 1 ) {
 						content = content.substring( 0, content.length - 2 );
 					}
-					content += '}';
+					content += "}";
 
-					write( 'define("json!' + moduleName + '", [ "messageformat" ], function( MessageFormat ){ return ' + content + ';});\n' );
+					write( "define('json!" + moduleName + "', [ 'messageformat' ], function( MessageFormat ){ return " + content + ";});\n" );
 				}
 			}
 		};
-		return msgfmt;
 	});
 }());

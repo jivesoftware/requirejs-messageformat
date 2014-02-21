@@ -4,6 +4,29 @@ module.exports = function ( grunt ) {
 	grunt.config.init( {
 		pkg: grunt.file.readJSON( "package.json" ),
 
+		jshint: {
+			src: {
+				options: {
+					jshintrc: "src/.jshintrc"
+				},
+				src: [ "src/**/*.js" ]
+			},
+			test: {
+				options: {
+					jshintrc: "test/.jshintrc"
+				},
+				src: [ "test/**/*.js" ]
+			},
+			gruntfile: {
+				options: {
+					jshintrc: ".jshintrc"
+				},
+				files: {
+					src: [ "Gruntfile.js" ]
+				}
+			}
+		},
+
 		qunit: {
 			options: {
 				timeout: 30000,
@@ -41,5 +64,5 @@ module.exports = function ( grunt ) {
 	// grunt plugins
 	require( "load-grunt-tasks" )( grunt );
 
-	grunt.registerTask( "test", [ "clean:testOut", "qunit" ] );
+	grunt.registerTask( "test", [ "jshint", "clean:testOut", "qunit" ] );
 };

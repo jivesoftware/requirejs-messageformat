@@ -138,6 +138,6 @@ define( [ "msgfmt" ], function() {
 				}), "On a trouvé 2 resultats dans 2 categories." );
 
 			start();
-		})
+		});
 	});
 });
