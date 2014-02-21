@@ -10,7 +10,7 @@ module.exports = function ( grunt ) {
 				"--web-security": "no",
 				coverage: {
 					src: [
-						"msgfmt.js"
+						"src/msgfmt.js"
 					],
 					instrumentedFiles: "temp/",
 					htmlReport: "_tests/reports/coverage",

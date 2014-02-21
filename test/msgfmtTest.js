@@ -1,11 +1,14 @@
-define(function() {
+define( [ "msgfmt" ], function() {
+	// Deal with mapped module ids
+	var moduleId = requirejs.s.contexts._.makeModuleMap( "msgfmt", null, false, true ).id;
+
 	module( "requirejs-messageformat", {
 		setup: function() {
-
+			requirejs.undef( moduleId );
 		},
 		teardown: function() {
-			requirejs.undef( "msgfmt!test/nls/resources.json" );
-			requirejs.undef( "msgfmt" );
+			requirejs.undef( moduleId + "!test/nls/resources.json" );
+			requirejs.undef( moduleId );
 		}
 	});
 
@@ -74,11 +77,13 @@ define(function() {
 	asyncTest( "fr", function () {
 		expect( 9 );
 		requirejs.config({
-			config: {
-				msgfmt: {
+			config: (function() {
+				var o = {};
+				o[ moduleId ] = {
 					locale: "fr"
-				}
-			}
+				};
+				return o;
+			}())
 		});
 
 		require( [ "msgfmt!test/nls/resources.json" ], function( i18n ) {
