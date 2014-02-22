@@ -49,7 +49,7 @@ module.exports = function( grunt ) {
 			options: {
 				pkgFiles: [ "package.json", "bower.json" ],
 				commitMessage: "Release %s",
-				tagName: 'v%s',
+				tagName: "v%s",
 				tagAnnotation: "Release %s",
 				buildCommand: false
 			}
