@@ -40,8 +40,18 @@ module.exports = function( grunt ) {
 			all: {
 				options: {
 					// sync specific options
-					sync: [ "author", "name", "version" ]
+					sync: [ "author", "name" ]
 				}
+			}
+		},
+
+		"release-it": {
+			options: {
+				pkgFiles: [ "package.json", "bower.json" ],
+				commitMessage: "Release %s",
+				tagName: 'v%s',
+				tagAnnotation: "Release %s",
+				buildCommand: false
 			}
 		},
 
