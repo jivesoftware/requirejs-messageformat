@@ -1,0 +1,8 @@
+{
+	"preset": "jquery",
+	"validateQuoteMarks": true,
+	"excludeFiles": [
+		"bower_components/**/*.js",
+		"node_modules/**/*.js"
+	]
+}

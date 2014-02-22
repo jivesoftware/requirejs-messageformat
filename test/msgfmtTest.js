@@ -12,7 +12,7 @@ define( [ "msgfmt" ], function() {
 		}
 	});
 
-	asyncTest( "root", function () {
+	asyncTest( "root", function() {
 		expect( 9 );
 
 		require([ "msgfmt!test/nls/resources.json" ], function( i18n ) {
@@ -48,7 +48,6 @@ define( [ "msgfmt" ], function() {
 					NUM_CATEGORIES: "1"
 				}), "He just found 0 results in one category." );
 
-
 			equal( i18n[ "found results" ](
 				{
 					GENDER: "other",
@@ -74,7 +73,7 @@ define( [ "msgfmt" ], function() {
 		});
 	});
 
-	asyncTest( "fr", function () {
+	asyncTest( "fr", function() {
 		expect( 9 );
 		requirejs.config({
 			config: (function() {
@@ -117,7 +116,6 @@ define( [ "msgfmt" ], function() {
 					NUM_RESULTS: "0",
 					NUM_CATEGORIES: "1"
 				}), "Il a trouvé 0 resultat dans une categorie." );
-
 
 			equal( i18n[ "found results" ](
 				{

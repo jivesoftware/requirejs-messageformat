@@ -30,7 +30,7 @@
  * locale pieces into each other, then finally sets the context.defined value
  * for the nls/fr-fr/colors bundle to be that mixed in locale.
  */
-(function () {
+(function() {
 	"use strict";
 
 	//regexp for reconstructing the master bundle name from parts of the regexp match
@@ -83,7 +83,7 @@
 		}
 	}
 
-	define([ "module", "messageformat", "text", "json" ], function ( module, MessageFormat, text, json ) {
+	define([ "module", "messageformat", "text", "json" ], function( module, MessageFormat, text, json ) {
 		var masterConfig = module.config(),
 			buildMap = {},
 			pluralizerBuildMap = {};
@@ -116,13 +116,13 @@
 
 			if ( locale && !MessageFormat.locale[ locale ] ) {
 				text.get( req.toUrl( "messageformat/locale/" + ( locale === "root" ? "en" : locale ) + ".js" ),
-					function ( content ) {
+					function( content ) {
 						pluralizerBuildMap[ locale ] = content;
 						/* jshint -W061 */
 						eval( content );
 						/* jshint +W061 */
 						_compile();
-					}, function ( err ) {
+					}, function( err ) {
 						if ( callback.error ) {
 							callback.error( err );
 						}
@@ -139,7 +139,7 @@
 			/**
 			 * Called when a dependency needs to be loaded.
 			 */
-			load: function ( name, req, onLoad, config ) {
+			load: function( name, req, onLoad, config ) {
 				config = config || {};
 
 				if ( config.locale ) {
@@ -190,15 +190,15 @@
 					}
 
 					if ( config.compileMessageFormat ) {
-						toLoad.forEach( function ( b ) {
+						toLoad.forEach( function( b ) {
 							var moduleName = b.substring( 5 );
-							json.load( moduleName, req, function ( o ) {
+							json.load( moduleName, req, function( o ) {
 								var bundle = {};
 								// Use mixin to do the assignment to buildMap as it filters out
 								// invalid attributes
 								mixin( bundle, JSON.parse( o ) );
 
-								compile( bundle, parts[0], req, function ( data ) {
+								compile( bundle, parts[0], req, function( data ) {
 									count++;
 									buildMap[ moduleName ] = data;
 									if ( count === toLoad.length ) {
@@ -208,10 +208,10 @@
 							}, config );
 						});
 					} else {
-						req( toLoad, function () {
+						req( toLoad, function() {
 							text.get(
 								req.toUrl( "messageformat/locale/" + ( parts[0] === "root" ? "en" : parts[0] ) + ".js" ),
-								function ( content ) {
+								function( content ) {
 									pluralizerBuildMap[ locale ] = content;
 									onLoad();
 								}
@@ -220,7 +220,7 @@
 					}
 				} else {
 					//First, fetch the master bundle, it knows what locales are available.
-					json.load( masterName, req, function ( master ) {
+					json.load( masterName, req, function( master ) {
 						//Figure out the best fit
 						var needed = [],
 							part,
@@ -266,7 +266,7 @@
 
 			//write method based on RequireJS official text plugin by James Burke
 			//https://github.com/jrburke/requirejs/blob/master/text.js
-			write: function ( pluginName, moduleName, write ) {
+			write: function( pluginName, moduleName, write ) {
 				var bundle, content, key, locale;
 
 				for ( locale in pluralizerBuildMap ) {
