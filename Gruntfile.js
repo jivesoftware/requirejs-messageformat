@@ -36,6 +36,15 @@ module.exports = function( grunt ) {
 			test: [ "test/*.js" ]
 		},
 
+		sync: {
+			all: {
+				options: {
+					// sync specific options
+					sync: [ "author", "name", "version" ]
+				}
+			}
+		},
+
 		qunit: {
 			options: {
 				timeout: 30000,

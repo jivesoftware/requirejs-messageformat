@@ -27,6 +27,7 @@
 		"grunt-contrib-requirejs": "0.4.1",
 		"grunt-coveralls": "0.3.0",
 		"grunt-jscs-checker": "0.3.2",
+		"grunt-npm2bower-sync": "0.3.0",
 		"grunt-qunit-istanbul": "0.3.0",
 		"load-grunt-tasks": "0.3.0"
 	},
