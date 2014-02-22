@@ -1,50 +1,50 @@
 {
-	"name": "requirejs-messageformat",
-	"title": "MessageFormat plugin for RequireJS",
-	"description": "RequireJS plugin that consumes MessageFormat nls bundles and compiles them",
-	"version": "0.0.3",
-	"homepage": "http://github.com/jivesoftware/require-messageformat",
-	"private": "true",
-	"author": {
-		"name": "Ghislain Seguin",
-		"url": "https://github.com/gseguin"
-	},
-	"repository": {
-		"type": "git",
-		"url": "https://github.com/jivesoftware/require-messageformat.git"
-	},
-	"bugs": "https://github.com/jivesoftware/require-messageformat/issues",
-	"licenses": [
-		{
-			"type": "MIT",
-			"url": "https://github.com/jivesoftware/require-messageformat/blob/master/LICENSE"
-		}
-	],
-	"devDependencies": {
-		"bower": "1.2.8",
-		"grunt": "0.4.2",
-		"grunt-contrib-clean": "0.5.0",
-		"grunt-contrib-jshint": "0.6.3",
-		"grunt-contrib-requirejs": "0.4.1",
-		"grunt-coveralls": "0.3.0",
-		"grunt-jscs-checker": "0.3.2",
-		"grunt-npm2bower-sync": "0.3.0",
-		"grunt-qunit-istanbul": "0.3.0",
-		"grunt-release-it": "0.1.1",
-		"load-grunt-tasks": "0.3.0"
-	},
-	"main": "Gruntfile.js",
-	"engines": {
-		"node": ">= 0.8.0"
-	},
-	"scripts": {
-		"postinstall": "./node_modules/bower/bin/bower install",
-		"ci": "grunt test coveralls"
-	},
-	"keywords": [
-		"requirejs",
-		"plugin",
-		"i18n",
-		"MessageFormat"
-	]
+  "name": "requirejs-messageformat",
+  "title": "MessageFormat plugin for RequireJS",
+  "description": "RequireJS plugin that consumes MessageFormat nls bundles and compiles them",
+  "version": "0.0.4",
+  "homepage": "http://github.com/jivesoftware/require-messageformat",
+  "private": "true",
+  "author": {
+    "name": "Ghislain Seguin",
+    "url": "https://github.com/gseguin"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/jivesoftware/require-messageformat.git"
+  },
+  "bugs": "https://github.com/jivesoftware/require-messageformat/issues",
+  "licenses": [
+    {
+      "type": "MIT",
+      "url": "https://github.com/jivesoftware/require-messageformat/blob/master/LICENSE"
+    }
+  ],
+  "devDependencies": {
+    "bower": "1.2.8",
+    "grunt": "0.4.2",
+    "grunt-contrib-clean": "0.5.0",
+    "grunt-contrib-jshint": "0.6.3",
+    "grunt-contrib-requirejs": "0.4.1",
+    "grunt-coveralls": "0.3.0",
+    "grunt-jscs-checker": "0.3.2",
+    "grunt-npm2bower-sync": "0.3.0",
+    "grunt-qunit-istanbul": "0.3.0",
+    "grunt-release-it": "0.1.1",
+    "load-grunt-tasks": "0.3.0"
+  },
+  "main": "Gruntfile.js",
+  "engines": {
+    "node": ">= 0.8.0"
+  },
+  "scripts": {
+    "postinstall": "./node_modules/bower/bin/bower install",
+    "ci": "grunt test coveralls"
+  },
+  "keywords": [
+    "requirejs",
+    "plugin",
+    "i18n",
+    "MessageFormat"
+  ]
 }
