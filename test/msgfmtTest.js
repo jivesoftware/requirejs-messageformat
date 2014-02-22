@@ -138,4 +138,50 @@ define( [ "msgfmt" ], function() {
 			start();
 		});
 	});
+
+	asyncTest( "root", function() {
+		expect( 1 );
+
+		require( [ "text!test/golden_files/nls/resources.built.text" ], function( goldenResources ) {
+			require( [ "../bower_components/r.js/dist/r.js" ], function() {
+				requirejs.browser = {
+					saveFile: function( fileName, fileContents /*, encoding*/ ) {
+						console.log( "saveFile called: " + fileName + ":\n" + fileContents);
+					}
+				};
+
+				requirejs.optimize({
+					baseUrl: "..",
+
+					"paths": {
+						"bower_components": "bower_components",
+						"messageformat": "bower_components/messageformat/messageformat",
+						"messageformat/locale": "bower_components/messageformat/locale",
+
+						"msgfmt": "src/msgfmt"
+					},
+
+					"map": {
+						"*": {
+							"text": "bower_components/requirejs-text/text",
+							"json": "bower_components/requirejs-plugins/src/json",
+							"msgfmt": "src/msgfmt"
+						}
+					},
+
+					compileMessageFormat: true,
+
+					optimize: "none",
+
+					name: "msgfmt!test/nls/resources.json",
+
+					out: function( text ) {
+						equal( text.trim().split( "\n" ).pop(), goldenResources );
+					}
+				}, function( /* buildText */ ) {
+					start();
+				});
+			});
+		});
+	});
 });

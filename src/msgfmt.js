@@ -41,13 +41,6 @@
 	//so, if match[5] is blank, it means this is the top bundle definition.
 	var nlsRegExp = /(^.*(^|\/)nls(\/|$))([^\/]*)\/?([^\/]*)/;
 
-	function processModuleName( moduleName ) {
-		if ( /\.json$/.test( moduleName ) ) {
-			moduleName =  "json!" + moduleName;
-		}
-		return moduleName;
-	}
-
 	//Helper function to avoid repeating code. Lots of arguments in the
 	//desire to stay functional and support RequireJS contexts without having
 	//to know about the RequireJS contexts.
@@ -63,7 +56,7 @@
 	function addIfExists( req, locale, toLoad, prefix, suffix ) {
 		var fullName = prefix + locale + "/" + suffix;
 		if ( require._fileExists( req.toUrl( fullName ) ) ) {
-			toLoad.push( processModuleName( fullName ) );
+			toLoad.push( fullName );
 		}
 	}
 
@@ -181,7 +174,7 @@
 				if ( config.isBuild ) {
 					//Check for existence of all locale possible files and
 					//require them if exist.
-					toLoad.push( processModuleName( masterName ) );
+					toLoad.push( masterName );
 					addIfExists( req, "root", toLoad, prefix, suffix );
 					for ( i = 0; i < parts.length; i++ ) {
 						part = parts[i];
@@ -190,8 +183,7 @@
 					}
 
 					if ( config.compileMessageFormat ) {
-						toLoad.forEach( function( b ) {
-							var moduleName = b.substring( 5 );
+						toLoad.forEach( function( moduleName ) {
 							json.load( moduleName, req, function( o ) {
 								var bundle = {};
 								// Use mixin to do the assignment to buildMap as it filters out
@@ -208,14 +200,16 @@
 							}, config );
 						});
 					} else {
-						req( toLoad, function() {
-							text.get(
-								req.toUrl( "messageformat/locale/" + ( parts[0] === "root" ? "en" : parts[0] ) + ".js" ),
-								function( content ) {
-									pluralizerBuildMap[ locale ] = content;
-									onLoad();
-								}
-							);
+						toLoad.forEach( function( moduleName ) {
+							json.load( moduleName, req, function() {
+								text.get(
+									req.toUrl( "messageformat/locale/" + ( parts[0] === "root" ? "en" : parts[0] ) + ".js" ),
+									function( content ) {
+										pluralizerBuildMap[ locale ] = content;
+										onLoad();
+									}
+								);
+							}, config );
 						});
 					}
 				} else {
