@@ -7,7 +7,7 @@ define( [ "msgfmt" ], function() {
 			requirejs.undef( moduleId );
 		},
 		teardown: function() {
-			requirejs.undef( moduleId + "!test/nls/resources.json" );
+			requirejs.undef( moduleId + "!test/nls/resources" );
 			requirejs.undef( moduleId );
 		}
 	});
@@ -15,7 +15,7 @@ define( [ "msgfmt" ], function() {
 	asyncTest( "root", function() {
 		expect( 9 );
 
-		require([ "msgfmt!test/nls/resources.json" ], function( i18n ) {
+		require([ "msgfmt!test/nls/resources" ], function( i18n ) {
 
 			equal( i18n[ "minutes ago" ]( { num: 1 } ), "1 minute ago" );
 			equal( i18n[ "minutes ago" ]( { num: 2 } ), "2 minutes ago" );
@@ -75,17 +75,28 @@ define( [ "msgfmt" ], function() {
 
 	asyncTest( "fr", function() {
 		expect( 9 );
+//		requirejs.config({
+//			config: (function() {
+//				var o = {};
+//				o[ moduleId ] = {
+//					locale: "fr"
+//				};
+//				return o;
+//			}())
+//		});
+
 		requirejs.config({
-			config: (function() {
-				var o = {};
-				o[ moduleId ] = {
-					locale: "fr"
-				};
-				return o;
-			}())
+			locale: "fr-fr",
+//			config: {
+//				//Set the config for the i18n
+//				//module ID
+//				msgfmt: {
+//					locale: "fr-fr"
+//				}
+//			}
 		});
 
-		require( [ "msgfmt!test/nls/resources.json" ], function( i18n ) {
+		require( [ "msgfmt!test/nls/resources" ], function( i18n ) {
 
 			equal( i18n[ "minutes ago" ]( { num: 1 } ), "Il y a 1 minute" );
 			equal( i18n[ "minutes ago" ]( { num: 2 } ), "Il y a 2 minutes" );
@@ -157,8 +168,7 @@ define( [ "msgfmt" ], function() {
 						"bower_components": "bower_components",
 						"messageformat": "bower_components/messageformat/messageformat",
 						"messageformat/locale": "bower_components/messageformat/locale",
-
-						"msgfmt": "src/msgfmt"
+						"test": "test"
 					},
 
 					"map": {
@@ -173,7 +183,7 @@ define( [ "msgfmt" ], function() {
 
 					optimize: "none",
 
-					name: "msgfmt!test/nls/resources.json",
+					name: "msgfmt!test/nls/resources",
 
 					out: function( text ) {
 						equal( text.trim().split( "\n" ).pop(), goldenResources );

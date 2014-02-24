@@ -1,10 +1,3 @@
-/**
- * @licence requirejs-messageformat Copyright (c) 2014, Ghislain Seguin
- * Available via the MIT license.
- * @license RequireJS i18n 2.0.4 Copyright (c) 2010-2012, The Dojo Foundation All Rights Reserved.
- * Available via the MIT or new BSD license.
- * see: http://github.com/requirejs/i18n for details
- */
 /*jslint regexp: true */
 /*global require: false, navigator: false, define: false */
 
@@ -37,7 +30,7 @@
  * locale pieces into each other, then finally sets the context.defined value
  * for the nls/fr-fr/colors bundle to be that mixed in locale.
  */
-(function () {
+(function() {
 	"use strict";
 
 	//regexp for reconstructing the master bundle name from parts of the regexp match
@@ -62,7 +55,7 @@
 
 	function addIfExists( req, locale, toLoad, prefix, suffix ) {
 		var fullName = prefix + locale + "/" + suffix;
-		if ( require._fileExists( req.toUrl( fullName + ".js" ) ) ) {
+		if ( require._fileExists( req.toUrl( fullName ) ) ) {
 			toLoad.push( fullName );
 		}
 	}
@@ -79,17 +72,12 @@
 		for ( prop in source ) {
 			if ( source.hasOwnProperty( prop ) && (!target.hasOwnProperty( prop ) || force) ) {
 				target[prop] = source[prop];
-			} else if ( typeof source[prop] === "object" ) {
-				if ( !target[prop] && source[prop] ) {
-					target[prop] = {};
-				}
-				mixin( target[prop], source[prop], force );
 			}
 		}
 	}
 
-	define( [ "module", "messageformat", "text" ], function ( module, MessageFormat, text ) {
-		var masterConfig = module.config ? module.config() : {},
+	define([ "module", "messageformat", "text", "json" ], function( module, MessageFormat, text, json ) {
+		var masterConfig = module.config(),
 			buildMap = {},
 			pluralizerBuildMap = {};
 
@@ -98,10 +86,8 @@
 				locale = locale.toLowerCase();
 			}
 			if ( locale === "root" ) {
-				locale = masterConfig.locale;
+				locale = "en";
 			}
-
-			locale = locale.split( "-" )[ 0 ];
 
 			function _compile() {
 				var key, val,
@@ -141,11 +127,12 @@
 		}
 
 		return {
-			version: "0.1.0",
+			version: "0.0.1",
+
 			/**
 			 * Called when a dependency needs to be loaded.
 			 */
-			load: function ( name, req, onLoad, config ) {
+			load: function( name, req, onLoad, config ) {
 				config = config || {};
 
 				if ( config.locale ) {
@@ -178,8 +165,8 @@
 					if ( !locale ) {
 						locale = masterConfig.locale =
 							typeof navigator === "undefined" ? "root" :
-								( navigator.language ||
-									navigator.userLanguage || "root" ).toLowerCase();
+								(navigator.language ||
+									navigator.userLanguage || "root").toLowerCase();
 					}
 					parts = locale.split( "-" );
 				}
@@ -191,53 +178,83 @@
 					addIfExists( req, "root", toLoad, prefix, suffix );
 					for ( i = 0; i < parts.length; i++ ) {
 						part = parts[i];
-						current += ( current ? "-" : "" ) + part;
+						current += (current ? "-" : "") + part;
 						addIfExists( req, current, toLoad, prefix, suffix );
 					}
 
+					if ( config.compileMessageFormat ) {
+						toLoad.forEach( function( moduleName ) {
+							json.load( moduleName, req, function( o ) {
+								var bundle = {};
+								// Use mixin to do the assignment to buildMap as it filters out
+								// invalid attributes
+								mixin( bundle, JSON.parse( o ) );
 
-					debugger;
-					toLoad.forEach( function( resourceBundle ) {
-						req( [ resourceBundle ], function( value ) {
-							compile( value, parts[0], req, function( data ) {
-								count++;
-								buildMap[ moduleName ] = data;
-								if ( count === toLoad.length ) {
-									onLoad();
-								}
-							});
+								compile( bundle, parts[0], req, function( data ) {
+									count++;
+									buildMap[ moduleName ] = data;
+									if ( count === toLoad.length ) {
+										onLoad();
+									}
+								});
+							}, config );
 						});
-					});
+					} else {
+						toLoad.forEach( function( moduleName ) {
+							json.load( moduleName, req, function() {
+								text.get(
+									req.toUrl( "messageformat/locale/" + ( parts[0] === "root" ? "en" : parts[0] ) + ".js" ),
+									function( content ) {
+										pluralizerBuildMap[ locale ] = content;
+										onLoad();
+									}
+								);
+							}, config );
+						});
+					}
 				} else {
 					//First, fetch the master bundle, it knows what locales are available.
-					req( [masterName], function ( master ) {
+					json.load( masterName, req, function( master ) {
 						//Figure out the best fit
 						var needed = [],
-							part;
+							part,
+							onResourceBundleLoad;
+
+						onResourceBundleLoad = function( rb ) {
+							var i, partBundle, part;
+							for ( i = needed.length - 1; i > -1 && needed[ i ]; i-- ) {
+								part = needed[ i ];
+								partBundle = master[ part ];
+								if ( partBundle === true || partBundle === 1 ) {
+									partBundle = rb;
+								}
+								mixin( value, partBundle );
+							}
+
+							mixin( value, master );
+
+							compile( value, part, req, onLoad );
+						};
 
 						//Always allow for root, then do the rest of the locale parts.
 						addPart( "root", master, needed, toLoad, prefix, suffix );
 						for ( i = 0; i < parts.length; i++ ) {
 							part = parts[i];
-							current += ( current ? "-" : "" ) + part;
+							current += (current ? "-" : "") + part;
 							addPart( current, master, needed, toLoad, prefix, suffix );
 						}
 
-						//Load all the parts missing.
-						req( toLoad, function () {
-							var i, partBundle, part;
-							for ( i = needed.length - 1; i > -1 && needed[ i ]; i-- ) {
-								part = needed[i];
-								partBundle = master[ part ];
-								if ( partBundle === true || partBundle === 1 ) {
-									partBundle = req( prefix + part + "/" + suffix );
-								}
-								mixin( value, partBundle );
+						if ( toLoad.length ) {
+							//Load all the parts missing.
+							for ( i = 0; i < toLoad.length; i++ ) {
+								json.load( toLoad[i], req, onResourceBundleLoad, config );
 							}
+						} else {
+							mixin( value, master );
 
-							compile( value, part, req, onLoad );
-						});
-					});
+							compile( value, "root", req, onLoad );
+						}
+					}, config );
 				}
 			},
 
