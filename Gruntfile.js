@@ -15,7 +15,10 @@ module.exports = function( grunt ) {
 				options: {
 					jshintrc: "test/.jshintrc"
 				},
-				src: [ "test/**/*.js" ]
+				src: [
+					"test/**/*.js",
+					"!test/golden_files/**/*.js"
+				]
 			},
 			gruntfile: {
 				options: {
@@ -71,7 +74,7 @@ module.exports = function( grunt ) {
 				}
 			},
 
-			all: [ "test/**/*.html" ]
+			all: [ "test/*.html" ]
 		},
 
 		coveralls: {
@@ -85,8 +88,62 @@ module.exports = function( grunt ) {
 			}
 		},
 
+		copy: {
+			testBuild: {
+				options: {
+					processContent: function( content, srcPath ) {
+						if ( srcPath === "test/functional/index_fr.html" ) {
+							content = content.replace( /main\.js/, "main_fr.js" );
+						}
+						return content;
+					}
+				},
+
+				files: {
+					"_tests/build/": [
+						"bower_components/**",
+						"test/requirejs.config.js",
+						"test/functional/**"
+					]
+				}
+			}
+		},
+
+		requirejs: {
+			options: {
+				baseUrl: ".",
+
+				mainConfigFile: "test/requirejs.config.js",
+
+				preserveLicenseComments: true,
+
+				optimize: "none",
+
+				insertRequire: [ "test/functional/main" ]
+			},
+
+			en: {
+				options: {
+					name: "test/functional/main",
+
+					out: "_tests/build/test/functional/main.js"
+				}
+			},
+
+			fr: {
+				options: {
+					locale: "fr",
+
+					name: "test/functional/main",
+
+					out: "_tests/build/test/functional/main_fr.js"
+				}
+			}
+		},
+
 		clean: {
-			testOut: [ "_tests" ]
+			testOut: [ "_tests" ],
+			buildOut: [ "_tests/build" ]
 		}
 	});
 
@@ -94,4 +151,6 @@ module.exports = function( grunt ) {
 	require( "load-grunt-tasks" )( grunt );
 
 	grunt.registerTask( "test", [ "jshint", "jscs", "clean:testOut", "qunit" ] );
+
+	grunt.registerTask( "build", [ "clean:buildOut", "copy:testBuild", "requirejs" ] );
 };
