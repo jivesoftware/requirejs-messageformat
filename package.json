@@ -2,7 +2,7 @@
   "name": "requirejs-messageformat",
   "title": "MessageFormat plugin for RequireJS",
   "description": "RequireJS plugin that consumes MessageFormat nls bundles and compiles them",
-  "version": "0.0.5",
+  "version": "0.1.0",
   "homepage": "http://github.com/jivesoftware/require-messageformat",
   "private": "true",
   "author": {
@@ -26,7 +26,7 @@
     "grunt": "0.4.2",
     "grunt-casper": "0.3.0",
     "grunt-contrib-clean": "0.5.0",
-	"grunt-contrib-connect": "0.7.0",
+    "grunt-contrib-connect": "0.7.0",
     "grunt-contrib-copy": "0.5.0",
     "grunt-contrib-jshint": "0.6.3",
     "grunt-contrib-requirejs": "0.4.1",
