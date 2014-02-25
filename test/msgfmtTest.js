@@ -75,25 +75,8 @@ define( [ "msgfmt" ], function() {
 
 	asyncTest( "fr", function() {
 		expect( 9 );
-//		requirejs.config({
-//			config: (function() {
-//				var o = {};
-//				o[ moduleId ] = {
-//					locale: "fr"
-//				};
-//				return o;
-//			}())
-//		});
-
 		requirejs.config({
-			locale: "fr-fr",
-//			config: {
-//				//Set the config for the i18n
-//				//module ID
-//				msgfmt: {
-//					locale: "fr-fr"
-//				}
-//			}
+			locale: "fr-fr"
 		});
 
 		require( [ "msgfmt!test/nls/resources" ], function( i18n ) {
@@ -150,10 +133,10 @@ define( [ "msgfmt" ], function() {
 		});
 	});
 
-	asyncTest( "root", function() {
+	asyncTest( "build.root", function() {
 		expect( 1 );
 
-		require( [ "text!test/golden_files/nls/resources.built.text" ], function( goldenResources ) {
+		require( [ "text!test/golden_files/nls/resources.built.js" ], function( goldenResources ) {
 			require( [ "../bower_components/r.js/dist/r.js" ], function() {
 				requirejs.browser = {
 					saveFile: function( fileName, fileContents /*, encoding*/ ) {
