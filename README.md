@@ -4,7 +4,7 @@ requirejs-messageformat [![Build Status](https://travis-ci.org/gseguin/requirejs
 RequireJS plugin to consume MessageFormat resource bundles
 
 ## Dependencies
-This plugin depends on Alex Sexton's [MessageFormat.js](https://github.com/SlexAxton/messageformat.js) library as well as the text! and json! plugins.
+This plugin depends on Alex Sexton's [MessageFormat.js](https://github.com/SlexAxton/messageformat.js) library as well as the text! plugin.
 
 The MessageFormat library must live in your source tree under a path that you'll alias as shown in the sample RequireJS config below.
 
@@ -22,7 +22,6 @@ requirejs.config({
     "map": {
         "*": {
             "text": "bower_components/requirejs-text/text",
-            "json": "bower_components/requirejs-plugins/src/json",
             "mgfmt": "bower_components/requirejs-messageformat/msgfmt"
         }
     }
