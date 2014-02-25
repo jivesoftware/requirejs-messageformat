@@ -37,7 +37,7 @@
  * locale pieces into each other, then finally sets the context.defined value
  * for the nls/fr-fr/colors bundle to be that mixed in locale.
  */
-(function () {
+(function() {
 	"use strict";
 
 	//regexp for reconstructing the master bundle name from parts of the regexp match
@@ -88,47 +88,64 @@
 		}
 	}
 
-	define( [ "module", "messageformat", "text" ], function ( module, MessageFormat, text ) {
+	define( [ "module", "messageformat", "text" ], function( module, MessageFormat, text ) {
 		var masterConfig = module.config ? module.config() : {},
 			buildMap = {},
-			pluralizerBuildMap = {};
+			messageformatBuildMap = {};
 
-		function compile( bundle, locale, req, callback ) {
-			if ( locale ) {
-				locale = locale.toLowerCase();
+		function _getLocale( requestedLocale ) {
+			var locale;
+			if ( requestedLocale ) {
+				requestedLocale = requestedLocale.toLowerCase();
 			}
-			if ( locale === "root" ) {
-				locale = masterConfig.locale;
+
+			locale = requestedLocale;
+
+			if ( requestedLocale === "root" ) {
+				locale = masterConfig.locale || "en";
 			}
 
 			locale = locale.split( "-" )[ 0 ];
 
-			function _compile() {
-				var key, val,
-					mf = new MessageFormat( locale ),
-					returnee = {};
+			return locale;
+		}
 
-				for ( key in bundle ) {
-					val = bundle[ key ];
-					if ( typeof val === "string" ) {
-						returnee[ key ] = mf.compile( val );
-					} else if ( typeof val === "function" || typeof val === "boolean" ) {
-						// if it's a function it is already compiled
-						// if it's a boolean it should be to indicate the availability of a locale
-						returnee[ key ] = val;
-					}
+		function _compile( bundle, locale ) {
+			var key, val,
+				mf = new MessageFormat( locale ),
+				compiledBundle = {};
+
+			for ( key in bundle ) {
+				val = bundle[ key ];
+				if ( typeof val === "string" ) {
+					compiledBundle[ key ] = mf.compile( val );
+				} else if ( typeof val === "object" ) {
+					compiledBundle[ key ] = _compile( val );
+				} else if ( typeof val === "function" || typeof val === "boolean" ) {
+					// if it's a function it is already compiled
+					// if it's a boolean it should be to indicate the availability of a locale
+					compiledBundle[ key ] = val;
 				}
-				callback( returnee );
+			}
+			return compiledBundle;
+		}
+
+		function compile( bundle, requestedLocale, req, callback ) {
+			var locale = _getLocale( requestedLocale );
+
+			if ( locale === "root" ) {
+				// The default locale for MessageFormat is English
+				locale = "en";
 			}
 
 			if ( locale && !MessageFormat.locale[ locale ] ) {
-				text.get( req.toUrl( "messageformat/locale/" + ( locale === "root" ? "en" : locale ) + ".js" ),
+				text.get( req.toUrl( "messageformat/locale/" + locale + ".js" ),
 					function( content ) {
-						pluralizerBuildMap[ locale ] = content;
+						messageformatBuildMap[ requestedLocale ] = content;
 						/* jshint -W061 */
 						eval( content );
 						/* jshint +W061 */
-						_compile();
+						callback( _compile( bundle, locale ) );
 					}, function( err ) {
 						if ( callback.error ) {
 							callback.error( err );
@@ -136,8 +153,37 @@
 					}
 				);
 			} else {
-				_compile();
+				callback( _compile( bundle, locale ) );
 			}
+		}
+
+		function _toString( bundle ) {
+			var s = "",
+				key, value;
+
+			if ( bundle && typeof bundle === "object" ) {
+				s += "{";
+
+				for ( key in bundle ) {
+					value = bundle[ key ];
+					if ( typeof value === "object" ) {
+						s += "\"" + key + "\": " + _toString( value );
+					} else if ( value instanceof Function || typeof value === "function" ) {
+						s += "\"" + key + "\": " + value.toString();
+					} else if ( value instanceof Boolean || typeof value === "boolean" ) {
+						s += "\"" + key + "\": " + value;
+					} else {
+						s += "\"" + key + "\": \"" + JSON.stringify( value ) + "\"";
+					}
+
+					s += ",";
+				}
+				if ( s.length > 1 ) {
+					s = s.substring( 0, s.length - 1 );
+				}
+				s += "}";
+			}
+			return s;
 		}
 
 		return {
@@ -145,7 +191,7 @@
 			/**
 			 * Called when a dependency needs to be loaded.
 			 */
-			load: function ( name, req, onLoad, config ) {
+			load: function( name, req, onLoad, config ) {
 				config = config || {};
 
 				if ( config.locale ) {
@@ -195,22 +241,40 @@
 						addIfExists( req, current, toLoad, prefix, suffix );
 					}
 
-
-					debugger;
 					toLoad.forEach( function( resourceBundle ) {
-						req( [ resourceBundle ], function( value ) {
-							compile( value, parts[0], req, function( data ) {
-								count++;
-								buildMap[ moduleName ] = data;
-								if ( count === toLoad.length ) {
-									onLoad();
+						text.get( req.toUrl( resourceBundle + ".js" ),
+							function( content ) {
+								var data,
+									onBundleCompiled = function( compiledBundle ) {
+										count++;
+										buildMap[ resourceBundle ] = compiledBundle;
+										if ( count === toLoad.length ) {
+											onLoad( null );
+										}
+									};
+
+								onBundleCompiled.error = onLoad.error;
+
+								content = content.trim();
+								content = content.replace( /define\s*\(/, "(function(){ return " );
+								content = content.replace( /\);$/, "; }())" );
+
+								/* jshint -W061 */
+								data = eval( content );
+								/* jshint +W061 */
+
+								compile( data, (count === 0) ? "root" : parts[0], req, onBundleCompiled );
+							},
+							function( err ) {
+								if ( onLoad.error ) {
+									onLoad.error( err );
 								}
-							});
-						});
+							}
+						);
 					});
 				} else {
 					//First, fetch the master bundle, it knows what locales are available.
-					req( [masterName], function ( master ) {
+					req( [ masterName ], function( master ) {
 						//Figure out the best fit
 						var needed = [],
 							part;
@@ -224,7 +288,7 @@
 						}
 
 						//Load all the parts missing.
-						req( toLoad, function () {
+						req( toLoad, function() {
 							var i, partBundle, part;
 							for ( i = needed.length - 1; i > -1 && needed[ i ]; i-- ) {
 								part = needed[i];
@@ -244,28 +308,20 @@
 			//write method based on RequireJS official text plugin by James Burke
 			//https://github.com/jrburke/requirejs/blob/master/text.js
 			write: function( pluginName, moduleName, write ) {
-				var bundle, content, key, locale;
+				var bundle, content, locale, module;
 
-				for ( locale in pluralizerBuildMap ) {
+				for ( locale in messageformatBuildMap ) {
 					write( "// Installs MessageFormat '" + locale + "' locale" );
-					write( "require( ['messageformat'], function( MessageFormat ) { " + pluralizerBuildMap[ locale ] + " });\n" );
+					write( "require( ['messageformat'], function( MessageFormat ) { " + messageformatBuildMap[ locale ] + " });\n" );
 					// Include that locale only once.
-					delete pluralizerBuildMap[ locale ];
+					delete messageformatBuildMap[ locale ];
 				}
-				if ( moduleName in buildMap ) {
-					bundle = buildMap[ moduleName ];
-					content = "{";
 
-					for ( key in bundle ) {
-						content += "\"" + key + "\": ";
-						content += "" + bundle[ key ] + ", ";
-					}
-					if ( content.length > 1 ) {
-						content = content.substring( 0, content.length - 2 );
-					}
-					content += "}";
+				for ( module in buildMap ) {
+					bundle = buildMap[ module ];
+					content = _toString( bundle );
 
-					write( "define('json!" + moduleName + "', [ 'messageformat' ], function( MessageFormat ){ return " + content + ";});\n" );
+					write( "define('" + module + "', ['messageformat'], function( MessageFormat ){ return " + content + ";});\n" );
 				}
 			}
 		};
