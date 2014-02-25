@@ -7,11 +7,11 @@ var host = casper.cli.get( "host" ) || "localhost",
 casper.test.begin("English page should show English", 2, function suite(test) {
 	casper.start( "http://" + host + ":" + port + path + "index.html" );
 
-	casper.waitForSelectorTextChange( "#fixture", function() {});
-
 	casper.then( function() {
 		test.assertExists( "#fixture" );
+	});
 
+	casper.waitForSelectorTextChange( "#fixture", function() {
 		test.assertEvalEquals(function() {
 			return __utils__.findOne( "#fixture" ).textContent;
 		}, "They just found 2 results in 2 categories.");
@@ -25,11 +25,11 @@ casper.test.begin("English page should show English", 2, function suite(test) {
 casper.test.begin("French page should show French", 2, function suite(test) {
 	casper.start( "http://" + host + ":" + port + path + "index_fr.html" );
 
-	casper.waitForSelectorTextChange( "#fixture", function() {});
-
 	casper.then( function() {
 		test.assertExists( "#fixture" );
+	});
 
+	casper.waitForSelectorTextChange( "#fixture", function() {
 		test.assertEvalEquals(function() {
 			return __utils__.findOne( "#fixture" ).textContent;
 		}, "On a trouvé 2 resultats dans 2 categories.");
