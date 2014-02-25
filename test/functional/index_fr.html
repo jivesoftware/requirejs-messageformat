@@ -1,0 +1,22 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>requirejs-messageformat Functional Test</title>
+
+    <script src="../../bower_components/requirejs/require.js"></script>
+    <script src="../requirejs.config.js"></script>
+
+</head>
+<body>
+    <div id="fixture"></div>
+    <script>
+        requirejs.config({
+            baseUrl: "../../",
+            locale: "fr"
+        });
+        require( [ "./main.js" ] );
+    </script>
+
+</body>
+</html>
