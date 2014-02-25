@@ -1,6 +1,9 @@
 module.exports = function( grunt ) {
 	"use strict";
 
+	var srcHttpPort = Math.floor( 8000 + Math.random() * 1000 ),
+		builtHttpPort = Math.floor( 9000 + Math.random() * 1000 );
+
 	grunt.config.init( {
 		pkg: grunt.file.readJSON( "package.json" ),
 
@@ -88,6 +91,40 @@ module.exports = function( grunt ) {
 			}
 		},
 
+		connect: {
+			src: {
+				options: {
+					port: srcHttpPort,
+					base: ".",
+				}
+			},
+			built: {
+				options: {
+					port: builtHttpPort,
+					base: "_tests/build"
+				}
+			}
+		},
+
+		casper: {
+			options: {
+				test: true,
+				"log-level": "debug",
+			},
+			"src": {
+				options: {
+					args: [ "--path=/test/functional/", "--port=" + srcHttpPort ]
+				},
+				src: [ "test/casperjs/msgfmtTest.js" ]
+			},
+			"built": {
+				options: {
+					args: [ "--path=/test/functional/", "--port=" + builtHttpPort ]
+				},
+				src: [ "test/casperjs/msgfmtTest.js" ]
+			}
+		},
+
 		copy: {
 			testBuild: {
 				options: {
@@ -143,6 +180,7 @@ module.exports = function( grunt ) {
 
 		clean: {
 			testOut: [ "_tests" ],
+			coverageOut: [ "_tests/coverage" ],
 			buildOut: [ "_tests/build" ]
 		}
 	});
@@ -150,7 +188,15 @@ module.exports = function( grunt ) {
 	// grunt plugins
 	require( "load-grunt-tasks" )( grunt );
 
-	grunt.registerTask( "test", [ "jshint", "jscs", "clean:testOut", "qunit" ] );
+	grunt.registerTask( "lint", [ "jshint", "jscs" ]);
+
+	grunt.registerTask( "test:integration", [ "clean:coverageOut", "qunit" ] );
+
+	grunt.registerTask( "test:functional.src", [ "connect:src", "casper:src" ] );
+	grunt.registerTask( "test:functional.built", [ "requirejs", "connect:built", "casper:built" ] );
+	grunt.registerTask( "test:functional", [ "test:functional.src", "test:functional.built" ] );
+
+	grunt.registerTask( "test", [ "lint", "test:integration", "test:functional" ] );
 
 	grunt.registerTask( "build", [ "clean:buildOut", "copy:testBuild", "requirejs" ] );
 };
