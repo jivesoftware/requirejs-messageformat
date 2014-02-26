@@ -108,8 +108,7 @@ module.exports = function( grunt ) {
 
 		casper: {
 			options: {
-				test: true,
-				"log-level": "debug",
+				test: true
 			},
 			"src": {
 				options: {
