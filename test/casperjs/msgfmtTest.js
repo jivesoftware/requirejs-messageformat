@@ -32,7 +32,7 @@ casper.test.begin("French page should show French", 2, function suite(test) {
 	casper.waitForSelectorTextChange( "#fixture", function() {
 		test.assertEvalEquals(function() {
 			return __utils__.findOne( "#fixture" ).textContent;
-		}, "On a trouvé 2 resultats dans 2 categories.");
+		}, "On a trouv\xE9 2 r\xE9sultats dans 2 cat\xE9gories.");
 	});
 
 	casper.run(function() {
