@@ -89,45 +89,45 @@ define( [ "msgfmt" ], function() {
 					GENDER: "female",
 					NUM_RESULTS: "1",
 					NUM_CATEGORIES: "1"
-				}), "Elle a trouv\xE9 un r\xE9sultat dans une cat\xE9gorie." );
+				}), "Elle a trouvé un résultat dans une catégorie." );
 
 			equal( i18n[ "found results" ](
 				{
 					GENDER: "male",
 					NUM_RESULTS: "1",
 					NUM_CATEGORIES: "1"
-				}), "Il a trouv\xE9 un r\xE9sultat dans une cat\xE9gorie." );
+				}), "Il a trouvé un résultat dans une catégorie." );
 
 			equal( i18n[ "found results" ](
 				{
 					NUM_RESULTS: "1",
 					NUM_CATEGORIES: "1"
-				}), "On a trouv\xE9 un r\xE9sultat dans une cat\xE9gorie." );
+				}), "On a trouvé un résultat dans une catégorie." );
 
 			equal( i18n[ "found results" ](
 				{
 					GENDER: "male",
 					NUM_RESULTS: "0",
 					NUM_CATEGORIES: "1"
-				}), "Il a trouv\xE9 0 r\xE9sultat dans une cat\xE9gorie." );
+				}), "Il a trouvé 0 résultat dans une catégorie." );
 
 			equal( i18n[ "found results" ](
 				{
 					NUM_RESULTS: "1",
 					NUM_CATEGORIES: "2"
-				}), "On a trouv\xE9 un r\xE9sultat dans 2 cat\xE9gories." );
+				}), "On a trouvé un résultat dans 2 catégories." );
 
 			equal( i18n[ "found results" ](
 				{
 					NUM_RESULTS: "2",
 					NUM_CATEGORIES: "1"
-				}), "On a trouv\xE9 2 r\xE9sultats dans une cat\xE9gorie." );
+				}), "On a trouvé 2 résultats dans une catégorie." );
 
 			equal( i18n[ "found results" ](
 				{
 					NUM_RESULTS: "2",
 					NUM_CATEGORIES: "2"
-				}), "On a trouv\xE9 2 r\xE9sultats dans 2 cat\xE9gories." );
+				}), "On a trouvé 2 résultats dans 2 catégories." );
 
 			start();
 		});

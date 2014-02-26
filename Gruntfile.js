@@ -126,7 +126,7 @@ module.exports = function( grunt ) {
 		},
 
 		copy: {
-			testBuild: {
+			built: {
 				options: {
 					processContent: function( content, srcPath ) {
 						if ( srcPath === "test/functional/index_fr.html" ) {
@@ -193,7 +193,7 @@ module.exports = function( grunt ) {
 	grunt.registerTask( "test:integration", [ "clean:coverageOut", "qunit" ] );
 
 	grunt.registerTask( "test:functional.src", [ "connect:src", "casper:src" ] );
-	grunt.registerTask( "test:functional.built", [ "requirejs", "connect:built", "casper:built" ] );
+	grunt.registerTask( "test:functional.built", [ "copy:built", "requirejs", "connect:built", "casper:built" ] );
 	grunt.registerTask( "test:functional", [ "test:functional.src", "test:functional.built" ] );
 
 	grunt.registerTask( "test", [ "lint", "test:integration", "test:functional" ] );
