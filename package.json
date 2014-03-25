@@ -2,7 +2,7 @@
   "name": "requirejs-messageformat",
   "title": "MessageFormat plugin for RequireJS",
   "description": "RequireJS plugin that consumes MessageFormat nls bundles and compiles them",
-  "version": "0.0.6",
+  "version": "0.0.7",
   "homepage": "http://github.com/jivesoftware/require-messageformat",
   "private": "true",
   "author": {

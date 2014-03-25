@@ -1,6 +1,6 @@
 {
   "name": "requirejs-messageformat",
-  "version": "0.0.6",
+  "version": "0.0.7",
   "main": [
     "src/msgfmt.js"
   ],
