@@ -134,7 +134,7 @@
 		}
 
 		return {
-			version: "0.0.1",
+			version: "0.0.6",
 
 			/**
 			 * Called when a dependency needs to be loaded.
@@ -189,35 +189,23 @@
 						addIfExists( req, current, toLoad, prefix, suffix );
 					}
 
-					if ( config.compileMessageFormat ) {
-						toLoad.forEach( function( b ) {
-							var moduleName = b.substring( 5 );
-							json.load( moduleName, req, function( o ) {
-								var bundle = {};
-								// Use mixin to do the assignment to buildMap as it filters out
-								// invalid attributes
-								mixin( bundle, JSON.parse( o ) );
+                    toLoad.forEach( function( b ) {
+                        var moduleName = b.substring( 5 );
+                        json.load( moduleName, req, function( o ) {
+                            var bundle = {};
+                            // Use mixin to do the assignment to buildMap as it filters out
+                            // invalid attributes
+                            mixin( bundle, JSON.parse( o ) );
 
-								compile( bundle, parts[0], req, function( data ) {
-									count++;
-									buildMap[ moduleName ] = data;
-									if ( count === toLoad.length ) {
-										onLoad();
-									}
-								});
-							}, config );
-						});
-					} else {
-						req( toLoad, function() {
-							text.get(
-								req.toUrl( "messageformat/locale/" + ( parts[0] === "root" ? "en" : parts[0] ) + ".js" ),
-								function( content ) {
-									pluralizerBuildMap[ locale ] = content;
-									onLoad();
-								}
-							);
-						});
-					}
+                            compile( bundle, parts[0], req, function( data ) {
+                                count++;
+                                buildMap[ moduleName ] = data;
+                                if ( count === toLoad.length ) {
+                                    onLoad();
+                                }
+                            });
+                        }, config );
+                    });
 				} else {
 					//First, fetch the master bundle, it knows what locales are available.
 					json.load( masterName, req, function( master ) {
@@ -287,8 +275,7 @@
 						content = content.substring( 0, content.length - 2 );
 					}
 					content += "}";
-
-					write( "define('json!" + moduleName + "', [ 'messageformat' ], function( MessageFormat ){ return " + content + ";});\n" );
+                    write( "define('msgfmt!" + moduleName + "', " + content + ");\n" );
 				}
 			}
 		};
