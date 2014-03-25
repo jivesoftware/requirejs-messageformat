@@ -41,13 +41,6 @@
 	//so, if match[5] is blank, it means this is the top bundle definition.
 	var nlsRegExp = /(^.*(^|\/)nls(\/|$))([^\/]*)\/?([^\/]*)/;
 
-	function processModuleName( moduleName ) {
-		if ( /\.json$/.test( moduleName ) ) {
-			moduleName =  "json!" + moduleName;
-		}
-		return moduleName;
-	}
-
 	//Helper function to avoid repeating code. Lots of arguments in the
 	//desire to stay functional and support RequireJS contexts without having
 	//to know about the RequireJS contexts.
@@ -63,7 +56,7 @@
 	function addIfExists( req, locale, toLoad, prefix, suffix ) {
 		var fullName = prefix + locale + "/" + suffix;
 		if ( require._fileExists( req.toUrl( fullName ) ) ) {
-			toLoad.push( processModuleName( fullName ) );
+			toLoad.push( fullName );
 		}
 	}
 
@@ -82,6 +75,19 @@
 			}
 		}
 	}
+
+    function sanitize( bundle ) {
+        var key, value;
+
+        for ( key in bundle ) {
+            if ( bundle.hasOwnProperty( key ) ) {
+                value = bundle[ key ];
+                if ( !( typeof value === "string" || typeof value === "boolean" ) ) {
+                    delete bundle[ key ];
+                }
+            }
+        }
+    }
 
 	define([ "module", "messageformat", "text", "json" ], function( module, MessageFormat, text, json ) {
 		var masterConfig = module.config(),
@@ -134,7 +140,7 @@
 		}
 
 		return {
-			version: "0.0.6",
+			version: "0.0.7",
 
 			/**
 			 * Called when a dependency needs to be loaded.
@@ -155,7 +161,8 @@
 					toLoad = [],
 					value = {},
 					i, part, current = "",
-					count = 0;
+					count = 0,
+                    bundle = {};
 
 				//If match[5] is blank, it means this is the top bundle definition,
 				//so it does not have to be handled. Locale-specific requests
@@ -181,7 +188,7 @@
 				if ( config.isBuild ) {
 					//Check for existence of all locale possible files and
 					//require them if exist.
-					toLoad.push( processModuleName( masterName ) );
+					toLoad.push( masterName );
 					addIfExists( req, "root", toLoad, prefix, suffix );
 					for ( i = 0; i < parts.length; i++ ) {
 						part = parts[i];
@@ -189,21 +196,20 @@
 						addIfExists( req, current, toLoad, prefix, suffix );
 					}
 
-                    toLoad.forEach( function( b ) {
-                        var moduleName = b.substring( 5 );
-                        json.load( moduleName, req, function( o ) {
-                            var bundle = {};
-                            // Use mixin to do the assignment to buildMap as it filters out
-                            // invalid attributes
-                            mixin( bundle, JSON.parse( o ) );
+                    toLoad.forEach( function( moduleName ) {
+                        text.get( req.toUrl( moduleName ), function( data ) {
+                            var localeBundle = JSON.parse( data );
+                            sanitize( localeBundle );
+                            mixin( bundle, localeBundle, true );
 
-                            compile( bundle, parts[0], req, function( data ) {
-                                count++;
-                                buildMap[ moduleName ] = data;
-                                if ( count === toLoad.length ) {
+                            count++;
+
+                            if ( count === toLoad.length ) {
+                                compile( bundle, parts[0], req, function( compiledBundle ) {
+                                    buildMap[ masterName ] = compiledBundle;
                                     onLoad();
-                                }
-                            });
+                                });
+                            }
                         }, config );
                     });
 				} else {
@@ -255,28 +261,29 @@
 			//write method based on RequireJS official text plugin by James Burke
 			//https://github.com/jrburke/requirejs/blob/master/text.js
 			write: function( pluginName, moduleName, write ) {
-				var bundle, content, key, locale;
+                var bundle, content, key, locale;
 
-				for ( locale in pluralizerBuildMap ) {
-					write( "// Installs MessageFormat '" + locale + "' locale" );
-					write( "require( ['messageformat'], function( MessageFormat ) { " + pluralizerBuildMap[ locale ] + " });\n" );
-					// Include that locale only once.
-					delete pluralizerBuildMap[ locale ];
-				}
-				if ( moduleName in buildMap ) {
-					bundle = buildMap[ moduleName ];
-					content = "{";
+                for ( locale in pluralizerBuildMap ) {
+                    write( "// Installs MessageFormat '" + locale + "' locale" );
+                    write( "require( ['messageformat'], function( MessageFormat ) { " + pluralizerBuildMap[ locale ] + " });\n" );
+                    // Include that locale only once.
+                    delete pluralizerBuildMap[ locale ];
+                }
 
-					for ( key in bundle ) {
-						content += "\"" + key + "\": ";
-						content += "" + bundle[ key ] + ", ";
-					}
-					if ( content.length > 1 ) {
-						content = content.substring( 0, content.length - 2 );
-					}
-					content += "}";
+                if ( moduleName in buildMap ) {
+                    bundle = buildMap[ moduleName ];
+                    content = "{";
+
+                    for ( key in bundle ) {
+                        content += "\"" + key + "\": ";
+                        content += "" + bundle[ key ] + ", ";
+                    }
+                    if ( content.length > 1 ) {
+                        content = content.substring( 0, content.length - 2 );
+                    }
+                    content += "}";
                     write( "define('msgfmt!" + moduleName + "', " + content + ");\n" );
-				}
+                }
 			}
 		};
 	});
