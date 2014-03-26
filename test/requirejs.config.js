@@ -3,13 +3,13 @@ requirejs.config({
 
 	"paths": {
 		"messageformat": "bower_components/messageformat/messageformat",
-		"messageformat/locale": "bower_components/messageformat/locale"
+		"messageformat/locale": "bower_components/messageformat/locale",
+        "json": "bower_components/requirejs-plugins/src/json",
+        "text": "bower_components/requirejs-text/text"
 	},
 
 	"map": {
 		"*": {
-			"text": "bower_components/requirejs-text/text",
-			"json": "bower_components/requirejs-plugins/src/json",
 			"msgfmt": "src/msgfmt"
 		}
 	}

@@ -6,4 +6,4 @@ before_script:
 script: npm run-script ci
 branches:
   only:
-    - master
+    - 0.0.x

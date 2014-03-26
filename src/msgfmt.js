@@ -89,7 +89,7 @@
         }
     }
 
-	define([ "module", "messageformat", "text", "json" ], function( module, MessageFormat, text, json ) {
+	define([ "module", "messageformat", "text" ], function( module, MessageFormat, text ) {
 		var masterConfig = module.config(),
 			buildMap = {},
 			pluralizerBuildMap = {};
@@ -140,7 +140,7 @@
 		}
 
 		return {
-			version: "0.0.7",
+			version: "0.0.8",
 
 			/**
 			 * Called when a dependency needs to be loaded.
@@ -214,7 +214,7 @@
                     });
 				} else {
 					//First, fetch the master bundle, it knows what locales are available.
-					json.load( masterName, req, function( master ) {
+					req( [ "json!" + masterName ], function( master ) {
 						//Figure out the best fit
 						var needed = [],
 							part,
@@ -247,7 +247,7 @@
 						if ( toLoad.length ) {
 							//Load all the parts missing.
 							for ( i = 0; i < toLoad.length; i++ ) {
-								json.load( toLoad[i], req, onResourceBundleLoad, config );
+                                req( [ "json!" + toLoad[ i ] ], onResourceBundleLoad );
 							}
 						} else {
 							mixin( value, master );
