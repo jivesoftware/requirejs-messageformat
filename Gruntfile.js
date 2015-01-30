@@ -35,7 +35,7 @@ module.exports = function( grunt ) {
 
 		jscs: {
 			options: {
-				config: ".jscs.json",
+				config: ".jscs.json"
 			},
 			gruntfile: [ "Gruntfile.js" ],
 			src: [ "src/*.js" ],
@@ -95,7 +95,7 @@ module.exports = function( grunt ) {
 			src: {
 				options: {
 					port: srcHttpPort,
-					base: ".",
+					base: "."
 				}
 			},
 			built: {
