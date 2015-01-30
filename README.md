@@ -1,6 +1,6 @@
 requirejs-messageformat
 =======================
-[![Build Status](https://travis-ci.org/jivesoftware/requirejs-messageformat.svg?branch=master)](https://travis-ci.org/jivesoftware/requirejs-messageformat) [![Coverage Status](https://coveralls.io/repos/jivesoftware/requirejs-messageformat/badge.png?branch=master)](https://coveralls.io/r/jivesoftware/requirejs-messageformat?branch=master)
+[![Build Status](https://travis-ci.org/jivesoftware/requirejs-messageformat.svg?branch=master)](https://travis-ci.org/jivesoftware/requirejs-messageformat) [![Coverage Status](https://coveralls.io/repos/jivesoftware/requirejs-messageformat/badge.png?branch=master)](https://coveralls.io/r/jivesoftware/requirejs-messageformat?branch=master) [![bitHound Score](https://app.bithound.io/jivesoftware/requirejs-messageformat/badges/score.svg)](https://app.bithound.io/jivesoftware/requirejs-messageformat)
 
 RequireJS plugin to consume MessageFormat resource bundles
 
