@@ -45,16 +45,16 @@
 	//["foo/bar/baz/nls/en-ca/foo", "foo/bar/baz/nls/", "/", "/", "en-ca", "foo"]
 	//nlsRegExp.exec("foo/bar/baz/nls/foo") gives:
 	//["foo/bar/baz/nls/foo", "foo/bar/baz/nls/", "/", "/", "foo", ""]
-	//so, if match[5] is blank, it means this is the top bundle definition.
+	//so, if match[ 5 ] is blank, it means this is the top bundle definition.
 	var nlsRegExp = /(^.*(^|\/)nls(\/|$))([^\/]*)\/?([^\/]*)/;
 
 	//Helper function to avoid repeating code. Lots of arguments in the
 	//desire to stay functional and support RequireJS contexts without having
 	//to know about the RequireJS contexts.
 	function addPart( locale, master, needed, toLoad, prefix, suffix ) {
-		if ( master[locale] ) {
+		if ( master[ locale ] ) {
 			needed.push( locale );
-			if ( master[locale] === true || master[locale] === 1 ) {
+			if ( master[ locale ] === true || master[ locale ] === 1 ) {
 				toLoad.push( prefix + locale + "/" + suffix );
 			}
 		}
@@ -77,13 +77,13 @@
 	function mixin( target, source, force ) {
 		var prop;
 		for ( prop in source ) {
-			if ( source.hasOwnProperty( prop ) && (!target.hasOwnProperty( prop ) || force) ) {
-				target[prop] = source[prop];
-			} else if ( typeof source[prop] === "object" ) {
-				if ( !target[prop] && source[prop] ) {
-					target[prop] = {};
+			if ( source.hasOwnProperty( prop ) && (!target.hasOwnProperty( prop ) || force ) ) {
+				target[ prop ] = source[ prop ];
+			} else if ( typeof source[ prop ] === "object" ) {
+				if ( !target[ prop ] && source[ prop ] ) {
+					target[ prop ] = {};
 				}
-				mixin( target[prop], source[prop], force );
+				mixin( target[ prop ], source[ prop ], force );
 			}
 		}
 	}
@@ -200,26 +200,26 @@
 
 				var masterName,
 					match = nlsRegExp.exec( name ),
-					prefix = match[1],
-					locale = match[4],
-					suffix = match[5],
+					prefix = match[ 1 ],
+					locale = match[ 4 ],
+					suffix = match[ 5 ],
 					parts = locale.split( "-" ),
 					toLoad = [],
 					value = {},
 					i, part, current = "",
 					count = 0;
 
-				//If match[5] is blank, it means this is the top bundle definition,
+				//If match[ 5 ] is blank, it means this is the top bundle definition,
 				//so it does not have to be handled. Locale-specific requests
-				//will have a match[4] value but no match[5]
-				if ( match[5] ) {
+				//will have a match[ 4 ] value but no match[ 5 ]
+				if ( match[ 5 ] ) {
 					//locale-specific bundle
-					prefix = match[1];
+					prefix = match[ 1 ];
 					masterName = prefix + suffix;
 				} else {
 					//Top-level bundle.
 					masterName = name;
-					suffix = match[4];
+					suffix = match[ 4 ];
 					locale = masterConfig.locale;
 					if ( !locale ) {
 						locale = masterConfig.locale =
@@ -236,7 +236,7 @@
 					toLoad.push( masterName );
 					addIfExists( req, "root", toLoad, prefix, suffix );
 					for ( i = 0; i < parts.length; i++ ) {
-						part = parts[i];
+						part = parts[ i ];
 						current += ( current ? "-" : "" ) + part;
 						addIfExists( req, current, toLoad, prefix, suffix );
 					}
@@ -263,7 +263,7 @@
 								data = eval( content );
 								/* jshint +W061 */
 
-								compile( data, (count === 0) ? "root" : parts[0], req, onBundleCompiled );
+								compile( data, (count === 0) ? "root" : parts[ 0 ], req, onBundleCompiled );
 							},
 							function( err ) {
 								if ( onLoad.error ) {
@@ -282,7 +282,7 @@
 						//Always allow for root, then do the rest of the locale parts.
 						addPart( "root", master, needed, toLoad, prefix, suffix );
 						for ( i = 0; i < parts.length; i++ ) {
-							part = parts[i];
+							part = parts[ i ];
 							current += ( current ? "-" : "" ) + part;
 							addPart( current, master, needed, toLoad, prefix, suffix );
 						}
@@ -291,7 +291,7 @@
 						req( toLoad, function() {
 							var i, partBundle, part;
 							for ( i = needed.length - 1; i > -1 && needed[ i ]; i-- ) {
-								part = needed[i];
+								part = needed[ i ];
 								partBundle = master[ part ];
 								if ( partBundle === true || partBundle === 1 ) {
 									partBundle = req( prefix + part + "/" + suffix );
