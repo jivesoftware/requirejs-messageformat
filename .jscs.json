@@ -1,5 +1,6 @@
 {
 	"preset": "jquery",
+    "maximumLineLength": 120,
 	"validateQuoteMarks": true,
 	"excludeFiles": [
 		"bower_components/**/*.js",
